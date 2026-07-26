@@ -1,0 +1,94 @@
+schema: spec-driven
+
+context: |
+  # Vitals — PR Health Metrics
+
+  Internal project, read-only with respect to VCS providers (GitHub first, GitLab/Bitbucket
+  later). Never writes, comments on, or modifies third-party PRs/repositories. Goal:
+  compute PR health (100% - points from issues flagged in review comments, via tags like
+  lint/sql/security) plus structural metrics (lifetime, review cycles). Test/experimentation
+  phase, not production yet — this allows preview/next tooling, as long as it's documented
+  in design.md with a re-evaluation trigger.
+
+  Full reference doc (code examples, folder diagrams): openspec/reference/architecture.md
+
+  ## Stack
+  pnpm + Turborepo 2.x (tasks, not pipeline). NestJS (@next/v12 preview) + Next.js (App
+  Router). TypeScript 6.0.x on the backend (nest-cli doesn't support TS7 yet — see
+  reference); TS7.x allowed on the frontend via experimental.useTypeScriptCli. oxlint (not
+  ESLint). Prettier (oxfmt still unstable). Vitest. Prisma + Postgres (SQLite in dev).
+  API input validation: zod via Nest 12's native Standard Schema support (not
+  class-validator).
+
+  ## Architecture (Clean Architecture adapted to Nest's DI, no use-cases layer)
+  - domain/: entities, ports (interfaces, token suffix _PORT, e.g. VCS_PROVIDER_PORT),
+    services (pure rules: TagParserService, ScoringEngineService, HealthCalculatorService).
+    NEVER imports Octokit/Prisma/any external SDK — the most important rule in the
+    architecture.
+  - Feature modules (github/, gitlab/ future, persistence/, metrics/): an adapter
+    implementing a port + an orchestration service + a module wiring up DI.
+  - A new VCS provider = a new folder implementing the same VcsProviderPort, without
+    touching domain/.
+
+  ## Code style
+  No implicit/explicit any (except justified interop). type for DTOs, interface for
+  contracts. kebab-case for files, PascalCase for classes, camelCase for variables,
+  UPPER_SNAKE_CASE for config constants. No magic numbers — thresholds live in
+  rules.yaml/health.config.ts.
+
+  ## Testing (TDD)
+  TDD is mandatory in domain/services: test before implementation (red-green-refactor),
+  100% coverage of decision paths. VCS adapters and HTTP controllers are pragmatic (no
+  strict TDD, since the contract comes from an external source or was already defined in
+  design.md). Orchestration is tested with fake/in-memory adapters, never the real
+  provider. Every bug fix gets a regression test before the fix is considered done.
+
+  ## Operational
+  - Logging: structured JSON via Nest's native Logger, syncRunId propagated per run,
+    error/warn/info/debug levels. Never log tokens, raw comment content, or full author
+    emails.
+  - VCS resilience: 30s timeout, rate limit read proactively from the API (pause below
+    10% remaining), retry max 3x only on transient errors with exponential backoff +
+    jitter, centralized in an infrastructure helper (not duplicated per adapter).
+  - Sync idempotency: natural key (vcs_provider, repo_full_name, pr_number), upsert never
+    plain insert, incremental sync by updated_at (not "since last run"), score/health
+    always recalculated from scratch (never accumulated).
+  - rules.yaml versioning: every PR stores the rules_version used for its calculation;
+    history is never recalculated automatically when rules change (only via an explicit
+    action).
+  - Timezone: everything in UTC on the backend/domain; conversion to the user's timezone
+    happens only in the presentation layer (dashboard).
+
+  ## Security and data
+  Always read-only (minimum-scope tokens). Don't persist full diffs, only metadata
+  (lines changed, files touched). Per-author ranking data is sensitive — access is
+  restricted, not public to anyone in the company.
+
+  ## Process
+  No step proceeds without explicit human approval: proposal → design → tasks → each
+  task/small task group implemented → final merge. If a step is advanced without
+  confirmation, that's a deviation to be reverted, not carried forward.
+  Commits follow Conventional Commits. One branch per change: openspec/<change-name>.
+  Every PR references the OpenSpec change it came from and requires at least 1 human
+  approval.
+
+rules:
+  proposal:
+    - Explicitly state the scope and what's out of scope
+    - If the change involves adopting/changing a preview/next tool version, flag it in the proposal itself
+    - If the change touches VCS integration, state which VcsProviderPort is involved
+
+  design:
+    - Document technical decisions and discarded alternatives
+    - Record any stack deviation (a @next/preview package) with a date and re-evaluation trigger
+    - For changes in domain/services, confirm no framework/external SDK dependency was introduced
+    - For a new VCS provider, confirm the implementation follows the same VcsProviderPort without altering domain/
+
+  specs:
+    - Use Given/When/Then format for scenarios
+    - Explicitly specify UTC behavior when dealing with dates/PR lifetime
+
+  tasks:
+    - Break work into atomic, verifiable steps (not "implement sync", but concrete steps)
+    - Any task touching domain/services must be written as an explicit TDD cycle (write a failing test → implement → passes → refactor)
+    - No task should be marked as started without human approval of the previous stage (proposal/design/tasks)
