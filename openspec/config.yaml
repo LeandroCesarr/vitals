@@ -10,8 +10,6 @@ context: |
   phase, not production yet — this allows preview/next tooling, as long as it's documented
   in design.md with a re-evaluation trigger.
 
-  Full reference doc (code examples, folder diagrams): openspec/reference/architecture.md
-
   ## Stack
   pnpm + Turborepo 2.x (tasks, not pipeline). NestJS (@next/v12 preview) + Next.js (App
   Router). TypeScript 6.0.x on the backend (nest-cli doesn't support TS7 yet — see
@@ -64,6 +62,17 @@ context: |
   (lines changed, files touched). Per-author ranking data is sensitive — access is
   restricted, not public to anyone in the company.
 
+  ## Versioning
+  The project follows SemVer (MAJOR.MINOR.PATCH) via git tags. MAJOR: breaking change
+  (non-backward-compatible schema/API change, or an architecture change requiring data
+  migration). MINOR: backward-compatible new functionality (most OpenSpec changes land
+  here — a new VCS provider, a new metric, a new endpoint). PATCH: bug fix, no behavior
+  change expected. Stays on 0.x.y while the project is in its internal/test phase, per
+  SemVer convention (0.x signals "still unstable, API may change on any MINOR"). This is
+  independent from rules.yaml's own rules_version (section above) — SemVer tracks code
+  releases, rules_version tracks which scoring rules were used for a given historical
+  calculation. Changelog generated from Conventional Commits.
+
   ## Process
   No step proceeds without explicit human approval: proposal → design → tasks → each
   task/small task group implemented → final merge. If a step is advanced without
@@ -75,6 +84,7 @@ context: |
 rules:
   proposal:
     - Explicitly state the scope and what's out of scope
+    - State the expected SemVer bump for this change (MAJOR/MINOR/PATCH) and why
     - If the change involves adopting/changing a preview/next tool version, flag it in the proposal itself
     - If the change touches VCS integration, state which VcsProviderPort is involved
 
