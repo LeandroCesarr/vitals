@@ -174,21 +174,38 @@
 - [x] 8.4 Add a `build` job with the same setup, running `turbo run build`
 - [x] 8.5 Confirm the workflow has no `test` job (out of scope per proposal) — only `lint`,
       `type-check`, `build` jobs exist; YAML structure verified with a parser
-- [ ] 8.6 Open a draft PR from a scratch branch to confirm all three jobs trigger and
-      report status correctly, then close/discard the draft PR — **requires pushing a
-      branch to GitHub; paused for explicit user confirmation before doing so**
+- [x] 8.6 Open a draft PR to confirm all three jobs trigger and report status correctly.
+      Deviated from "scratch branch, then discard" per user decision: committed the real
+      work directly to `feature/1-setup-monorepo` (9 conventional-commit, English commits,
+      no co-authorship trailer) and opened PR #10 against `main` as draft — genuinely
+      useful work, not throwaway, so nothing to discard. All three checks passed on the
+      first run: Build ✓, Lint ✓, Type-check ✓
+      (https://github.com/LeandroCesarr/vitals/pull/10)
 
-## 9. Branch protection (manual, not expressible in committed files)
+## 9. Branch protection (not expressible in committed files)
 
-- [ ] 9.1 In GitHub repo settings, configure branch protection on the default branch
-      requiring the `lint`, `type-check`, and `build` checks to pass before merge
-- [ ] 9.2 Require at least 1 human approval on every PR, per the project's process
-      convention
+- [x] 9.1 Configure branch protection on `main` requiring the `Lint`, `Type-check`, and
+      `Build` status checks (strict — branch must be up to date before merge) to pass
+      before merge. Deviated from "manual, GitHub UI" per user decision: configured
+      programmatically via `gh api repos/LeandroCesarr/vitals/branches/main/protection`
+      (PUT), since the authenticated token has sufficient `repo` scope and the user owns
+      the repository
+- [x] 9.2 ~~Require at least 1 human approval on every PR~~ — attempted
+      (`required_approving_review_count: 1`), but the repository has no collaborator other
+      than the owner (`gh api repos/.../collaborators` returns only `LeandroCesarr`), so no
+      one could ever approve and the rule blocked all merges outright (GitHub disallows
+      self-approval). Removed `required_pull_request_reviews` per user decision, keeping
+      only the `Lint`/`Type-check`/`Build` required status checks. This is a **documented
+      deviation** from `openspec/config.yaml`'s "every PR requires at least 1 human
+      approval" convention — re-add the review requirement once a second collaborator
+      joins the repo. Force-push and branch deletion remain disabled either way
 
 ## 10. Finalize and release
 
-- [ ] 10.1 Update the OpenSpec change status (mark this change ready for archive once merged)
-- [ ] 10.2 Open the PR for `setup-monorepo`, referencing this OpenSpec change and GitHub
-      issue #1
-- [ ] 10.3 After human approval and merge, tag the merge commit `v0.1.0` and push the tag
-      (`git tag v0.1.0 && git push origin v0.1.0`)
+- [x] 10.1 Update the OpenSpec change status (mark this change ready for archive once
+      merged) — PR #10 merged into `main` (commit `da3213f`), all 49 tasks in this file
+      done or explicitly deviated-and-documented; ready for `/opsx:archive`
+- [x] 10.2 Open the PR for `setup-monorepo`, referencing this OpenSpec change and GitHub
+      issue #1 — done as part of task 8.6: PR #10, merged
+- [x] 10.3 After human approval and merge, tag the merge commit `v0.1.0` and push the tag
+      (`git tag v0.1.0 && git push origin v0.1.0`) — tag pushed on merge commit `da3213f`
