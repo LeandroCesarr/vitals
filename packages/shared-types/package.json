@@ -1,0 +1,21 @@
+{
+  "name": "@vitals/shared-types",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "lint": "oxlint src/",
+    "format": "oxfmt src/",
+    "format:check": "oxfmt --check src/"
+  },
+  "devDependencies": {
+    "@vitals/oxfmt-config": "workspace:*",
+    "@vitals/oxlint-config": "workspace:*",
+    "@vitals/tsconfig": "workspace:*",
+    "oxfmt": "0.60.0",
+    "oxlint": "^1.75.0",
+    "typescript": "~6.0.0"
+  }
+}
