@@ -280,6 +280,14 @@ the default `AppModule`. No VCS provider is implemented or modified, so the
 
 ## Risks / Trade-offs
 
+- **[Risk]** `openspec/config.yaml` requires "at least 1 human approval" on every PR, but
+  this repository currently has a single collaborator (the owner) — a required-reviews rule
+  would block every merge forever, since GitHub disallows self-approval. → **Mitigation**:
+  the branch protection configured in this change (decision, section 9) enforces only the
+  `Lint`/`Type-check`/`Build` status checks, with `required_pull_request_reviews` removed
+  for now. This is a **documented, deliberate deviation** from the config.yaml convention,
+  not an oversight — re-add `required_approving_review_count: 1` the moment a second
+  collaborator joins the repository.
 - **[Risk]** `@nestjs/*@next` (v12 preview) could ship a breaking change or be pulled/retagged
   between now and implementation. → **Mitigation**: pin exact preview versions (not `^next`
   floating) in `apps/api/package.json`; re-run `pnpm install` and CI before merge to catch
