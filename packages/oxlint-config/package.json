@@ -1,0 +1,17 @@
+{
+  "name": "@vitals/oxlint-config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "types": "./index.ts",
+  "exports": "./index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "lint": "oxlint ."
+  },
+  "devDependencies": {
+    "@vitals/tsconfig": "workspace:*",
+    "oxlint": "^1.75.0",
+    "typescript": "~6.0.0"
+  }
+}
