@@ -233,15 +233,16 @@
 
 ## 9. Finalize and release
 
-- [ ] 9.1 Commit the change on the issue-linked `feature/2-domain-core` branch
+- [x] 9.1 Commit the change on the issue-linked `feature/2-domain-core` branch
       (Conventional Commits, microcommits, English, no co-authorship trailer), then push and
       open a PR referencing GitHub issue #2 — corrected from an earlier direct-to-main plan:
       the user clarified mid-implementation that direct-to-main was a one-time exception for
       `setup-monorepo` only; every change from here on lands via a PR on its issue-linked
-      branch
-- [ ] 9.2 Archive the OpenSpec change (`openspec/changes/domain-core/` →
+      branch. Landed as 10 microcommits on `feature/2-domain-core`, opened as PR #12
+- [x] 9.2 Archive the OpenSpec change (`openspec/changes/domain-core/` →
       `openspec/changes/archive/`, sync `specs/domain-core/spec.md` into
-      `openspec/specs/`) as part of the same PR — not a follow-up PR
-- [ ] 9.3 After the PR merges, tag the resulting `main` commit `v0.2.0` and push the tag, per
+      `openspec/specs/`) as part of the same PR — not a follow-up PR. Included in PR #12's
+      final commit
+- [x] 9.3 After the PR merges, tag the resulting `main` commit `v0.2.0` and push the tag, per
       the project's SemVer convention (MINOR: new backward-compatible functionality, nothing
-      from `v0.1.0` breaks)
+      from `v0.1.0` breaks) — PR #12 merged, `main` tagged `v0.2.0` and pushed
