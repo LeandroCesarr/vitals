@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build && tsc-alias -p tsconfig.build.json",
     "format": "oxfmt \"src/**/*.ts\" \"test/**/*.ts\"",
     "format:check": "oxfmt --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -31,12 +31,14 @@
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "10.5.0",
     "@nestjs/cli": "12.0.0-alpha.6",
     "@nestjs/schematics": "12.0.0-alpha.9",
     "@nestjs/testing": "12.0.0-alpha.5",
     "@types/express": "^5.0.0",
     "@types/node": "^24.0.0",
     "@types/supertest": "^7.0.0",
+    "@vitest/coverage-v8": "4.1.10",
     "@vitals/oxfmt-config": "workspace:*",
     "@vitals/oxlint-config": "workspace:*",
     "@vitals/tsconfig": "workspace:*",
@@ -44,6 +46,7 @@
     "oxlint": "^1.58.0",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
+    "tsc-alias": "1.9.1",
     "typescript": "~6.0.0",
     "vitest": "^4.1.2"
   }
