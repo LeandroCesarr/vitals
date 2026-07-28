@@ -1,0 +1,8 @@
+{
+  "version": "v1",
+  "weights": {
+    "lint": 5,
+    "sql": 15,
+    "security": 25
+  }
+}
